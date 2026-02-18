@@ -29,6 +29,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify build artifacts
+        run: |
+          ls -lh dist
+          test -s dist/bundle.js
+          test -s dist/index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

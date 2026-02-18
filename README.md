@@ -18,6 +18,7 @@ This will start an http server and automatically re-compile the TypeScript,
 HTML and CSS files whenever they change.
 
 ## For owners
-To push to production: `git subtree push --prefix dist origin gh-pages`.
+Deployment is automated by GitHub Actions via `.github/workflows/deploy.yml` on pushes to `master`.
+If you use GitHub Pages, ensure the repository Pages source is set to **GitHub Actions** (not `gh-pages` branch mode).
 
 This is not an official Google product.
