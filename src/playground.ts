@@ -881,10 +881,11 @@ function generateNetwork(firstTime = false): void {
     layerConfigs.push({
       connectivity: state.layerConnectivity[i] || 0.3,
       frequency: state.layerFrequency[i] || 1,
+      topology: state.topology,
     });
   }
 
-  simNetwork = sim.buildNetwork(state.numAgents, layerConfigs, state.topology);
+  simNetwork = sim.buildNetwork(state.numAgents, layerConfigs);
   sim.seedInfected(simNetwork, state.initialInfected);
 }
 
