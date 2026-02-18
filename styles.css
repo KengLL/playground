@@ -380,6 +380,7 @@ header h1 .optional {
   display: flex;
   -webkit-justify-content: space-between;
   justify-content: space-between;
+  gap: 24px;
   margin-top: 30px;
   margin-bottom: 50px;
   padding-top: 2px;
@@ -480,6 +481,11 @@ g.column rect {
 
 /* Data column */
 
+.data.column {
+  width: 140px;
+  flex-shrink: 0;
+}
+
 .vcenter {
   display: -webkit-box;
   display: -moz-box;
@@ -487,10 +493,6 @@ g.column rect {
   display: -webkit-flex;
   display: flex;
   align-items: center;
-}
-
-.data.column {
-  width: 10%;
 }
 
 .data.column .dataset-list {
@@ -584,10 +586,11 @@ g.column rect {
   color: rgba(0, 0, 0, 0.8);
 }
 
-/* Features column */
+/* Features column — flex-grow takes the middle space */
 
 .features.column {
-  width: 10%;
+  flex-grow: 1;
+  min-width: 300px;
   position: relative;
 }
 
@@ -740,35 +743,42 @@ g.column rect {
   left: -2px;
 }
 
-/* Hidden layers column */
+/* Simulation h4: title left, layer controls centered in remaining space */
 
-.hidden-layers.column {
-  width: 40%;
+.features.column h4 {
+  justify-content: flex-start;
 }
 
-#main-part .hidden-layers h4 {
-  -webkit-justify-content: center;
+.simulation-title {
+  flex-shrink: 0;
+}
+
+.layers-header-controls {
+  flex: 1;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: -5px;
+  gap: 4px;
 }
 
-.hidden-layers #layers-label {
-  width: 125px;
-  display: inline-block;
+.layers-header-controls #num-layers {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 2px;
 }
 
-.hidden-layers #num-layers {
-  margin: 0 10px;
-  width: 10px;
-  display: inline-block;
+.layers-header-controls #layers-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: #555;
 }
 
-.hidden-layers h4 .mdl-button {
-  margin-right: 5px;
+.layers-header-controls .mdl-button {
+  margin-right: 0;
 }
 
 .bracket {
-  margin-top: 5px;
+  margin-top: 2px;
   border: solid 1px rgba(0, 0, 0, 0.2);
   border-bottom: 0;
   height: 4px;
@@ -991,4 +1001,282 @@ footer .links a:hover {
 /* Keep grey focus circle for non-start values */
 #main-part .mdl-slider.is-upgraded:focus:not(:active)::-webkit-slider-thumb {
   box-shadow: 0 0 0 10px rgba(0,0,0, 0.12);
+}
+
+/* ============================================================
+   MultiRepast4py Simulation Playground — custom styles
+   ============================================================ */
+
+/* Top controls: sliders inline */
+#top-controls .control .slider {
+  margin: 2px 0 0;
+  padding: 0;
+}
+
+#top-controls .control input[type=range] {
+  width: 100%;
+}
+
+/* Topology data column — 1-column stacked layout */
+.data.column .dataset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0 10px;
+  overflow: visible;
+}
+
+.data.column .dataset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  float: none;
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+.data.column .data-thumbnail {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.topology-label {
+  font-size: 12px;
+  color: #555;
+  font-weight: 400;
+  text-align: left;
+  margin-top: 0;
+}
+
+/* Arc diagram */
+path.layer-arc {
+  fill: none;
+  /* No CSS transition — initial draw should be instant; JS handles pulse transitions */
+  cursor: pointer;
+}
+
+path.layer-arc-hover {
+  fill: none;
+  cursor: pointer;
+}
+
+/* Agent circles */
+g.agent {
+  cursor: pointer;
+}
+
+g.agent circle.agent-circle {
+  stroke: #fff;
+  stroke-width: 2;
+  transition: fill 0.2s;
+}
+
+g.agent text.agent-label {
+  font-size: 9px;
+  fill: #fff;
+  pointer-events: none;
+  font-weight: 500;
+  dominant-baseline: central;
+  text-anchor: middle;
+}
+
+g.agent:hover circle.agent-circle {
+  stroke: #333;
+  stroke-width: 2.5;
+}
+
+/* Hovercard for agents / arcs */
+#hovercard {
+  font-size: 12px;
+  line-height: 1.5;
+  width: 180px;
+  padding: 8px 10px;
+}
+
+#hovercard .hovercard-content div {
+  margin-bottom: 2px;
+}
+
+/* Per-layer controls — one compact row per layer */
+.plus-minus-layer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.03);
+  border-left-width: 4px;
+  border-left-style: solid;
+  box-sizing: border-box;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.layer-title {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 52px;
+  flex-shrink: 0;
+}
+
+/* Group wrapping label + [-] value [+] */
+.layer-control-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.layer-row-label {
+  font-size: 11px;
+  color: #777;
+  font-weight: 300;
+  margin-right: 2px;
+  white-space: nowrap;
+}
+
+.layer-value {
+  font-size: 13px;
+  font-weight: 400;
+  color: #333;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Stats bar */
+#stats-bars {
+  display: flex;
+  height: 16px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0 6px;
+}
+
+.stat-bar {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+/* Agent state legend */
+.agent-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #555;
+}
+
+.agent-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Layer color swatches */
+.layer-color-0 { background: #f59322; }
+.layer-color-1 { background: #0877bd; }
+.layer-color-2 { background: #2ecc71; }
+.layer-color-3 { background: #9b59b6; }
+.layer-color-4 { background: #e74c3c; }
+.layer-color-5 { background: #1abc9c; }
+
+/* SVG agent state classes */
+.agent-S { fill: #aaaaaa; }
+.agent-I { fill: #e74c3c; }
+.agent-R { fill: #2ecc71; }
+
+/* Simulation column */
+.features.column {
+  min-height: 350px;
+}
+
+/* #network is now in normal flow (position: relative) so it doesn't
+   overlay the layer controls below it */
+#network {
+  position: relative;
+  top: auto;
+  left: auto;
+  z-index: 100;
+}
+
+/* Per-layer controls below the SVG — one row per layer */
+#layer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 0 0 8px;
+}
+
+/* Layer Nodes chart section — both charts stacked */
+#layer-chart-section {
+  margin-top: 14px;
+  clear: both;
+}
+
+.layer-chart-label {
+  font-size: 11px;
+  color: #666;
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+
+#layer-chart-svg,
+#agent-spread-svg,
+#agent-chart-svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+/* Adjust features column position of hovercard */
+.features.column #hovercard {
+  top: -10px;
+  left: unset;
+}
+
+/* Selected agent — dashed highlight ring */
+g.agent.agent-selected circle.agent-circle {
+  stroke: #333;
+  stroke-width: 3;
+  stroke-dasharray: 4 2;
+}
+
+/* Agent spread history line chart */
+#agent-spread-section {
+  margin-top: 14px;
+  clear: both;
+}
+
+#agent-spread-svg {
+  display: block;
+  width: 100%;
+}
+
+#agent-spread-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.spread-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #555;
+}
+
+.spread-legend-line {
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+  flex-shrink: 0;
 }
