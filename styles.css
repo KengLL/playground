@@ -1291,3 +1291,46 @@ g.agent.agent-selected circle.agent-circle {
   border-radius: 1px;
   flex-shrink: 0;
 }
+
+/* Custom topology thumbnail in global selector — indicator only, not clickable */
+#custom-topology-thumb {
+  cursor: default;
+  pointer-events: none;
+}
+#custom-topology-thumb.selected {
+  border: 2px solid black;
+  opacity: 1;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+  background-color: white;
+}
+
+/* Per-layer topology mini-thumbnails inside each layer control row */
+.layer-topo-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.layer-topo-thumb {
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: block;
+  opacity: 0.22;
+  border: 1.5px solid rgba(0,0,0,0.1);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.layer-topo-thumb:hover {
+  opacity: 0.55;
+  border-color: #999;
+}
+
+.layer-topo-thumb.selected {
+  opacity: 1;
+  border: 1.5px solid #333;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  background-color: white;
+}

@@ -151,6 +151,61 @@ function drawTopologyThumbnail(canvas: HTMLCanvasElement,
   }
 }
 
+/** Draws the "Custom" thumbnail — shows two visually distinct sub-graphs
+ *  separated by a dashed line, indicating mixed per-layer topologies. */
+function drawCustomTopologyThumbnail(canvas: HTMLCanvasElement): void {
+  const w = canvas.width = 60;
+  const h = canvas.height = 60;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, w, h);
+
+  // Left cluster: random-ish (4 nodes with cross edges)
+  const leftPts  = [{x:10,y:15},{x:23,y:8},{x:27,y:26},{x:13,y:32}];
+  const leftEdges: [number,number][] = [[0,1],[1,2],[2,3],[0,2],[1,3]];
+
+  // Right cluster: hub/scale-free (4 nodes, star from hub)
+  const rightPts = [{x:43,y:18},{x:53,y:9},{x:57,y:25},{x:50,y:36}];
+  const rightEdges: [number,number][] = [[0,1],[0,2],[0,3]];
+
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 1;
+  for (let [a, b] of leftEdges) {
+    ctx.beginPath(); ctx.moveTo(leftPts[a].x, leftPts[a].y);
+    ctx.lineTo(leftPts[b].x, leftPts[b].y); ctx.stroke();
+  }
+  for (let [a, b] of rightEdges) {
+    ctx.beginPath(); ctx.moveTo(rightPts[a].x, rightPts[a].y);
+    ctx.lineTo(rightPts[b].x, rightPts[b].y); ctx.stroke();
+  }
+
+  ctx.fillStyle = '#555';
+  for (let pt of [...leftPts, ...rightPts]) {
+    ctx.beginPath(); ctx.arc(pt.x, pt.y, 3, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // Dashed vertical separator
+  ctx.setLineDash([2, 2]);
+  ctx.strokeStyle = '#bbb';
+  ctx.beginPath(); ctx.moveTo(35, 5); ctx.lineTo(35, 55); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+/** Reflects the current state.layerTopology into the global topology selector.
+ *  Highlights the matching topology if all layers agree, or "Custom" if mixed. */
+function updateGlobalTopologyUI(): void {
+  let layerTopos = state.layerTopology.slice(0, state.numLayers);
+  let allSame = layerTopos.length > 0 && layerTopos.every(t => t === layerTopos[0]);
+
+  d3.selectAll("canvas[data-topology]").classed("selected", false);
+  d3.select("#custom-topology-thumb").classed("selected", false);
+
+  if (allSame) {
+    d3.select(`canvas[data-topology=${layerTopos[0]}]`).classed("selected", true);
+  } else {
+    d3.select("#custom-topology-thumb").classed("selected", true);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // GUI setup
 // ---------------------------------------------------------------------------
@@ -184,27 +239,38 @@ function makeGUI() {
     reset(false, true); // keep params, just regenerate
   });
 
-  // Topology thumbnails
-  let topologyThumbnails = d3.selectAll("canvas[data-topology]");
-  topologyThumbnails.on("click", function () {
-    let newTopo = (this as any).dataset.topology as sim.TopologyType;
-    if (newTopo === state.topology) return;
-    state.topology = newTopo;
-    topologyThumbnails.classed("selected", false);
-    d3.select(this).classed("selected", true);
-    generateNetwork();
-    parametersChanged = true;
-    reset();
-  });
-  // Select current topology
-  d3.select(`canvas[data-topology=${state.topology}]`).classed("selected", true);
-
-  // Draw topology thumbnails
+  // Draw global topology thumbnails (the 3 named ones)
   let topologyCanvases = document.querySelectorAll("canvas[data-topology]");
   for (let i = 0; i < topologyCanvases.length; i++) {
     let canvas = topologyCanvases[i] as HTMLCanvasElement;
     drawTopologyThumbnail(canvas, (canvas as any).dataset.topology as sim.TopologyType);
   }
+  // Draw the Custom thumbnail (indicator only — no click handler)
+  let customCanvas = document.getElementById("custom-topology-thumb") as HTMLCanvasElement;
+  if (customCanvas) drawCustomTopologyThumbnail(customCanvas);
+
+  // Global topology thumbnails — clicking one unifies ALL layers to that topology
+  let topologyThumbnails = d3.selectAll("canvas[data-topology]");
+  topologyThumbnails.on("click", function () {
+    let newTopo = (this as any).dataset.topology as sim.TopologyType;
+    if (!newTopo) return;
+    // No-op if all layers already match
+    let alreadyUnified = state.layerTopology
+      .slice(0, state.numLayers).every(t => t === newTopo);
+    if (alreadyUnified && state.topology === newTopo) return;
+    state.topology = newTopo;
+    // Sync every layer to the chosen topology
+    for (let i = 0; i < state.numLayers; i++) {
+      state.layerTopology[i] = newTopo;
+    }
+    updateGlobalTopologyUI();
+    generateNetwork();
+    parametersChanged = true;
+    reset();
+  });
+
+  // Set initial global selector state
+  updateGlobalTopologyUI();
 
   // Agents dropdown (numAgents)
   let agentsDropdown = d3.select("#numAgents").on("change", function () {
@@ -260,6 +326,7 @@ function makeGUI() {
     if (state.numLayers >= 6) return;
     state.layerConnectivity.push(0.3);
     state.layerFrequency.push(1);
+    state.layerTopology.push(state.topology);
     state.numLayers++;
     parametersChanged = true;
     reset();
@@ -270,6 +337,7 @@ function makeGUI() {
     state.numLayers--;
     state.layerConnectivity.splice(state.numLayers);
     state.layerFrequency.splice(state.numLayers);
+    state.layerTopology.splice(state.numLayers);
     parametersChanged = true;
     reset();
   });
@@ -432,6 +500,9 @@ function drawSimulation(network: sim.SimNetwork): void {
   // Per-layer controls rendered into the layers column (not #network)
   layers.forEach((_layer, idx) => addLayerControl(idx));
 
+  // Keep global topology selector in sync
+  updateGlobalTopologyUI();
+
   // Update layers label
   let suffix = state.numLayers !== 1 ? "s" : "";
   d3.select("#layers-label").text("Layer" + suffix);
@@ -548,6 +619,29 @@ function addLayerControl(layerIdx: number): void {
     .attr("class", "layer-title")
     .style("color", color)
     .text(`Layer ${layerIdx + 1}`);
+
+  // Per-layer topology mini-thumbnails
+  let topoGroup = div.append("span").attr("class", "layer-topo-group");
+  (["random", "smallworld", "scalefree"] as sim.TopologyType[]).forEach(topo => {
+    let canvasEl = document.createElement("canvas");
+    canvasEl.className = "layer-topo-thumb";
+    canvasEl.title = topo;
+    canvasEl.width = 28;
+    canvasEl.height = 28;
+    drawTopologyThumbnail(canvasEl, topo);
+    if ((state.layerTopology[layerIdx] || state.topology) === topo) {
+      canvasEl.classList.add("selected");
+    }
+    canvasEl.addEventListener("click", () => {
+      if (state.layerTopology[layerIdx] === topo) return;
+      state.layerTopology[layerIdx] = topo;
+      updateGlobalTopologyUI();
+      generateNetwork();
+      parametersChanged = true;
+      reset();
+    });
+    (topoGroup.node() as HTMLElement).appendChild(canvasEl);
+  });
 
   // Connectivity group: Conn [-] 0.3 [+]
   let connGroup = div.append("span").attr("class", "layer-control-group");
@@ -992,12 +1086,18 @@ function generateNetwork(firstTime = false): void {
   }
   Math.seedrandom(state.seed);
 
+  // Keep layerTopology array in sync with numLayers
+  while (state.layerTopology.length < state.numLayers) {
+    state.layerTopology.push(state.topology);
+  }
+  state.layerTopology.length = state.numLayers;
+
   let layerConfigs = [];
   for (let i = 0; i < state.numLayers; i++) {
     layerConfigs.push({
       connectivity: state.layerConnectivity[i] || 0.3,
       frequency: state.layerFrequency[i] || 1,
-      topology: state.topology,
+      topology: state.layerTopology[i] || state.topology,
     });
   }
 

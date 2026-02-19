@@ -61,6 +61,7 @@ export class State {
     { name: "initialInfected", type: Type.NUMBER },
     { name: "layerConnectivity", type: Type.ARRAY_NUMBER },
     { name: "layerFrequency", type: Type.ARRAY_NUMBER },
+    { name: "layerTopology", type: Type.ARRAY_STRING },
     { name: "numLayers", type: Type.NUMBER },
     { name: "seed", type: Type.STRING },
     { name: "hideText", type: Type.BOOLEAN },
@@ -75,6 +76,7 @@ export class State {
   initialInfected = 3;
   layerConnectivity: number[] = [0.3];
   layerFrequency: number[] = [1];
+  layerTopology: TopologyType[] = [];
   numLayers = 1;
   seed: string;
   hideText = false;
@@ -140,6 +142,11 @@ export class State {
     });
 
     state.numLayers = state.layerConnectivity.length;
+    // Ensure layerTopology is the right length, filling with global topology
+    while (state.layerTopology.length < state.numLayers) {
+      state.layerTopology.push(state.topology);
+    }
+    state.layerTopology = state.layerTopology.slice(0, state.numLayers) as TopologyType[];
     if (state.seed == null) {
       state.seed = Math.random().toFixed(5);
     }
