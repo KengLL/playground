@@ -425,6 +425,7 @@ function drawSimulation(network: sim.SimNetwork): void {
       selectedAgentId = d.id;
       highlightSelectedAgent();
       d3.select("#agent-spread-label").text(`Agent ${d.id} — spread history`);
+      renderAgentLayerConnections();
       renderAgentSpreadChart();
     });
 
@@ -626,6 +627,13 @@ function updateStatsBars(stats: sim.SimStats): void {
 // ---------------------------------------------------------------------------
 
 interface BarDatum { label: string; value: number; color: string; agentId?: number; }
+interface LayerConnectionDatum {
+  label: string;
+  value: number;
+  scaledValue: number;
+  frequency: number;
+  color: string;
+}
 
 function updateLayerChart(): void {
   if (!simNetwork) return;
@@ -652,6 +660,7 @@ function updateLayerChart(): void {
       selectedAgentId = d.agentId;
       highlightSelectedAgent();
       d3.select("#agent-spread-label").text(`Agent ${d.agentId} — spread history`);
+      renderAgentLayerConnections();
       renderAgentSpreadChart();
     }
   });
@@ -735,6 +744,113 @@ function renderBarChart(selector: string, data: BarDatum[], height: number,
         .style("font-size", "8px").style("fill", "#666")
         .text(d.label);
     }
+  });
+}
+
+function renderAgentLayerConnections(): void {
+  let svg = d3.select("#agent-layer-svg");
+  if (svg.empty()) return;
+
+  svg.selectAll("*").remove();
+  if (selectedAgentId === null || !simNetwork) return;
+
+  let layerData: LayerConnectionDatum[] = simNetwork.layers.map((layer, li) => {
+    let connectionCount = layer.edges.reduce((count, edge) =>
+      count + (edge.source === selectedAgentId ? 1 : 0), 0);
+    let frequency = Math.max(1, layer.frequency || 1);
+    return {
+      label: `L${li + 1}`,
+      value: connectionCount,
+      scaledValue: connectionCount / frequency,
+      frequency,
+      color: LAYER_COLORS[li % LAYER_COLORS.length]
+    };
+  });
+
+  let svgEl = svg.node() as SVGElement;
+  let width = svgEl.parentElement ? svgEl.parentElement.offsetWidth - 4 : 260;
+  const rowH = 6;
+  const innerGap = 2;
+  const layerGap = 4;
+  const top = 16;
+  const bottom = 4;
+  const rows = Math.max(1, layerData.length);
+  const height = Math.max(80, top + bottom + rows * (rowH * 2 + innerGap) +
+      Math.max(0, rows - 1) * layerGap);
+  svg.attr("width", width).attr("height", height);
+
+  const left = 24;
+  const right = 86;
+  const chartW = Math.max(1, width - left - right);
+  const maxVal = layerData.reduce((m, d) =>
+    Math.max(m, d.value, d.scaledValue), 1);
+
+  svg.append("text")
+    .attr("x", left)
+    .attr("y", 9)
+    .style("font-size", "8px")
+    .style("fill", "#666")
+    .text("Raw connections");
+
+  svg.append("text")
+    .attr("x", left + 70)
+    .attr("y", 9)
+    .style("font-size", "8px")
+    .style("fill", "#666")
+    .text("Scaled by frequency (1/N)");
+
+  layerData.forEach((d, i) => {
+    let baseY = top + i * (rowH * 2 + innerGap + layerGap);
+    let rawY = baseY;
+    let scaledY = baseY + rowH + innerGap;
+    let rawW = (d.value / maxVal) * chartW;
+    let scaledW = (d.scaledValue / maxVal) * chartW;
+    let scaledText = d.scaledValue % 1 === 0
+      ? String(d.scaledValue)
+      : d.scaledValue.toFixed(2);
+
+    svg.append("text")
+      .attr("x", left - 3)
+      .attr("y", baseY + rowH + innerGap / 2)
+      .attr("text-anchor", "end")
+      .attr("dominant-baseline", "middle")
+      .style("font-size", "8px")
+      .style("fill", "#666")
+      .text(d.label);
+
+    svg.append("rect")
+      .attr("x", left)
+      .attr("y", rawY)
+      .attr("width", rawW)
+      .attr("height", rowH)
+      .style("fill", d.color)
+      .style("opacity", 0.9);
+
+    svg.append("rect")
+      .attr("x", left)
+      .attr("y", scaledY)
+      .attr("width", scaledW)
+      .attr("height", rowH)
+      .style("fill", d.color)
+      .style("opacity", 0.45);
+
+    svg.append("text")
+      .attr("x", left + chartW + 4)
+      .attr("y", rawY + rowH / 2)
+      .attr("text-anchor", "start")
+      .attr("dominant-baseline", "middle")
+      .style("font-size", "8px")
+      .style("fill", "#666")
+      .text(`${d.value}`);
+
+    svg.append("text")
+      .attr("x", left + chartW + 4)
+      .attr("y", scaledY + rowH / 2)
+      .attr("text-anchor", "start")
+      .attr("dominant-baseline", "middle")
+      .style("font-size", "8px")
+      .style("fill", "#666")
+      .text(`${scaledText} (1/${d.frequency})`);
   });
 }
 
@@ -913,6 +1029,7 @@ function updateUI(activeLayers?: Set<number>): void {
   updateStatsBars(stats);
   updateLayerChart();
   recordAgentSpread();
+  renderAgentLayerConnections();
   renderAgentSpreadChart();
 
   d3.select("#loss-train").text(stats.infected);
@@ -940,6 +1057,7 @@ function reset(onStartup = false, keepNetwork = false): void {
   agentSpreadLog = [];
   selectedAgentId = null;
   d3.select("#agent-spread-label").text("Click an agent or bar to view spread history");
+  d3.select("#agent-layer-svg").selectAll("*").remove();
   d3.select("#agent-spread-svg").selectAll("*").remove();
   d3.select("#agent-spread-legend").html("");
   state.serialize();

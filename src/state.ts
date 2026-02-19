@@ -69,7 +69,7 @@ export class State {
   [key: string]: any;
 
   numAgents = 20;
-  spreadRate = 0.3;
+  spreadRate = 0.1;
   recoveryRate = 0.05;
   topology: TopologyType = "random";
   initialInfected = 3;

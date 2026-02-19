@@ -57,7 +57,7 @@
         </div>
       </div>
       <div class="control ui-spreadRate">
-        <label for="spreadRate">Spread Rate:&nbsp;<span class="value">0.30</span></label>
+        <label for="spreadRate">Spread Rate:&nbsp;<span class="value">0.10</span></label>
         <p class="slider">
           <input class="mdl-slider mdl-js-slider" type="range" id="spreadRate" min="0.01" max="1" step="0.01" value="0.3">
         </p>
@@ -199,6 +199,10 @@
       <!-- Agent spread over time line chart -->
       <div id="agent-spread-section">
         <div class="layer-chart-label" id="agent-spread-label">Click an agent or bar to view spread history</div>
+        <div id="agent-layer-section">
+          <div class="layer-chart-label">Connections per layer</div>
+          <svg id="agent-layer-svg" height="80"></svg>
+        </div>
         <svg id="agent-spread-svg" height="100"></svg>
         <div id="agent-spread-legend"></div>
       </div>
@@ -212,35 +216,39 @@
       <i class="material-icons">keyboard_arrow_down</i>
     </button>
   </div>
-
   <!-- Article -->
   <article id="article-text">
+
     <div class="l--body">
-      <h2>What Is a Multilayer Simulation?</h2>
-      <p>A multilayer network is a collection of the same agents (people, nodes) connected by different types of relationships — each type is a <strong>layer</strong>. For example: friendships, workplace contacts, and family ties could be three layers of a social network.</p>
-      <p>This playground lets you watch how information (or a disease) spreads across layers using the <a href="https://github.com/repast/repast4py">Repast4py</a> agent-based model paradigm, implemented in JavaScript for interactive exploration.</p>
+      <h2>What Is a Multilayer Network?</h2>
+      <p>A multilayer network models entities connected through different types of relationships, where each relationship type forms its own <strong>layer</strong>.</p>
+      <p>Importantly, layers do <strong>not</strong> need to contain the exact same set of nodes. Different layers may involve different participants — for example, a workplace layer may include only employees, while a family layer includes relatives.</p>
+      <p>In this playground, we transform the system by taking the <strong>union of all agents across layers</strong>. If an agent does not participate in a particular layer, it simply has no connections in that layer. This allows us to simulate efficiently without storing large multilayer matrices.</p>
+      <p>This playground lets you observe how information (or disease) spreads across layers using a MultiRepast4py-inspired agent-based modeling approach, implemented in JavaScript for interactive exploration.</p>
     </div>
 
     <div class="l--body">
       <h2>Reading the Visualization</h2>
-      <p>Each <strong>circle</strong> is an agent. Agents are colored by their state: gray (Susceptible), red (Infected), or green (Recovered).</p>
-      <p>Each <strong>layer</strong> of connections is drawn as a set of arcs. The first layer arcs above the agents in orange; the second layer arcs below in blue; additional layers alternate, each with a unique color. <strong>Arc thickness</strong> represents the connection weight — thicker arcs are stronger connections that spread infection more easily.</p>
-      <p>Hover over an agent to see which layer first infected it and how many agents it has spread to per layer. Hover over an arc to see the edge weight.</p>
+      <p>Each <strong>circle</strong> represents an agent. Agents are colored by their state: gray (Susceptible), red (Infected), or green (Recovered).</p>
+      <p>Each <strong>layer</strong> of connections is drawn as a set of arcs. The first layer appears above the agents (orange), the second below (blue), and additional layers alternate position and color.</p>
+      <p><strong>Arc thickness</strong> represents connection weight — thicker arcs correspond to stronger interactions and higher transmission probability.</p>
+      <p>Hover over an agent to see which layer first infected it and how many agents it has infected per layer. Hover over an arc to see its weight.</p>
     </div>
 
     <div class="l--body">
       <h2>Controls</h2>
-      <p><strong>Agents</strong>: how many agents are in the simulation.</p>
-      <p><strong>Spread Rate</strong>: base probability that an infected agent spreads to a neighbor in one step (multiplied by the edge weight).</p>
+      <p><strong>Agents</strong>: number of agents in the simulation.</p>
+      <p><strong>Spread Rate</strong>: base probability that an infected agent transmits in one step (scaled by edge weight).</p>
       <p><strong>Recovery Rate</strong>: probability an infected agent recovers per step.</p>
-      <p><strong>Connectivity</strong> (per layer): edge density — higher means more connections in that layer.</p>
-      <p><strong>Frequency</strong> (per layer): how many times this layer fires per simulation step. Higher frequency layers spread faster.</p>
+      <p><strong>Connectivity</strong> (per layer): edge density — higher values mean more connections in that layer.</p>
+      <p><strong>Frequency</strong> (per layer): how often that layer activates (every N simulation steps). Not all interactions happen equally often — you likely see coworkers more frequently than extended family.</p>
     </div>
 
     <div class="l--body">
       <h2>Repurpose This?</h2>
-      <p>This playground is open-source. It builds on the <a href="https://github.com/tensorflow/playground">TensorFlow Playground</a> (Apache 2.0) and demonstrates concepts from the <a href="https://github.com/Repast/repast4py">MultiRepast4py</a> multilayer simulation framework.</p>
+      <p>This playground is open-source. It builds on the <a href="https://github.com/tensorflow/playground">TensorFlow Playground</a> (Apache 2.0) and demonstrates ideas from the <a href="https://github.com/Repast/repast4py">MultiRepast4py</a> multilayer simulation framework.</p>
     </div>
+
   </article>
 
   <!-- Footer -->
@@ -253,6 +261,7 @@
       </div>
     </div>
   </footer>
+
 
   <script src="bundle.js"></script>
   <script src="analytics.js"></script>

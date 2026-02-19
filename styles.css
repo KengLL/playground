@@ -1228,6 +1228,7 @@ g.agent:hover circle.agent-circle {
 }
 
 #layer-chart-svg,
+#agent-layer-svg,
 #agent-spread-svg,
 #agent-chart-svg {
   display: block;
@@ -1252,6 +1253,16 @@ g.agent.agent-selected circle.agent-circle {
 #agent-spread-section {
   margin-top: 14px;
   clear: both;
+}
+
+#agent-layer-section {
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+
+#agent-layer-svg {
+  display: block;
+  width: 100%;
 }
 
 #agent-spread-svg {
