@@ -237,6 +237,22 @@
       <p>Each <strong>layer</strong> of connections is drawn as a set of arcs. The first layer appears above the agents (orange), the second below (blue), and additional layers alternate position and color.</p>
       <p><strong>Arc thickness</strong> represents connection weight — thicker arcs correspond to stronger interactions and higher transmission probability.</p>
       <p>Hover over an agent to see which layer first infected it and how many agents it has infected per layer. Hover over an arc to see its weight.</p>
+
+      <h3>How We Build the Visualization</h3>
+      <p>Step through the animation below to see how separate layer networks are merged into a single arc diagram.</p>
+      <div id="viz-explainer">
+        <div id="viz-explainer-controls">
+          <button id="viz-prev" class="mdl-button mdl-js-button mdl-button--icon" title="Previous step" disabled>
+            <i class="material-icons">chevron_left</i>
+          </button>
+          <span id="viz-step-label">Step 1 / 6</span>
+          <button id="viz-next" class="mdl-button mdl-js-button mdl-button--icon" title="Next step">
+            <i class="material-icons">chevron_right</i>
+          </button>
+        </div>
+        <p id="viz-step-description" class="viz-desc"></p>
+        <svg id="viz-explainer-svg" width="550" height="260"></svg>
+      </div>
     </div>
 
     <div class="l--body">

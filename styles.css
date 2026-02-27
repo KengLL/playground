@@ -1304,6 +1304,83 @@ g.agent.agent-selected circle.agent-circle {
   background-color: white;
 }
 
+/* ---- Viz explainer animation ---- */
+#viz-explainer {
+  margin: 24px 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 16px 20px 20px;
+}
+
+#viz-explainer-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+#viz-step-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  min-width: 80px;
+  text-align: center;
+}
+
+#viz-explainer-controls .mdl-button {
+  background: rgba(158,158,158,.12);
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+#viz-explainer-controls .mdl-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+#viz-explainer-controls .mdl-button:hover:not(:disabled) {
+  background: rgba(158,158,158,.25);
+}
+
+p.viz-desc {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 10px;
+  min-height: 22px;
+}
+
+#viz-explainer-svg {
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+#viz-explainer-svg text {
+  font-family: "Roboto", "Helvetica", sans-serif;
+}
+
+#viz-explainer-svg .viz-node {
+  cursor: default;
+}
+
+#viz-explainer-svg .viz-edge {
+  fill: none;
+  stroke-linecap: round;
+}
+
+#viz-explainer-svg .viz-label {
+  font-size: 12px;
+  font-weight: 500;
+  fill: #444;
+}
+
 /* Per-layer topology mini-thumbnails inside each layer control row */
 .layer-topo-group {
   display: flex;

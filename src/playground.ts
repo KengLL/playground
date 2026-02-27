@@ -5,6 +5,7 @@
 import * as sim from "./simulation";
 import { State, topologies, getKeyFromValue } from "./state";
 import { AppendingLineChart } from "./linechart";
+import { initVizExplainer } from "./vizexplainer";
 import * as d3 from 'd3';
 
 // ---------------------------------------------------------------------------
@@ -1140,7 +1141,7 @@ function updateUI(activeLayers?: Set<number>): void {
 }
 
 function zeroPad(n: number): string {
-  let pad = "000000";
+  let pad = "000";
   return (pad + n).slice(-pad.length);
 }
 
@@ -1221,6 +1222,12 @@ d3.select(".more button").on("click", function () {
       return (t: number) => { scrollTo(0, i(t)); };
     });
 });
+
+// ---------------------------------------------------------------------------
+// "How to read visualization" — interactive step-through animation
+// ---------------------------------------------------------------------------
+
+initVizExplainer();
 
 // ---------------------------------------------------------------------------
 // Bootstrap
