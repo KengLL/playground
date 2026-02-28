@@ -215,32 +215,16 @@
   </div>
 
   <!-- More -->
-  <div class="more">
-    <button class="mdl-button mdl-js-button mdl-button--fab">
-      <i class="material-icons">keyboard_arrow_down</i>
-    </button>
-  </div>
-  <!-- Article -->
   <article id="article-text">
 
     <div class="l--body">
-      <h2>What Is a Multilayer Network?</h2>
-      <p>A multilayer network models entities connected through different types of relationships, where each relationship type forms its own <strong>layer</strong>.</p>
-      <p>Importantly, layers do <strong>not</strong> need to contain the exact same set of nodes. Different layers may involve different participants — for example, a workplace layer may include only employees, while a family layer includes relatives.</p>
-      <p>In this playground, we transform the system by taking the <strong>union of all agents across layers</strong>. If an agent does not participate in a particular layer, it simply has no connections in that layer. This allows us to simulate efficiently without storing large multilayer matrices.</p>
-      <p>This playground lets you observe how information (or disease) spreads across layers using a MultiRepast4py-inspired agent-based modeling approach, implemented in JavaScript for interactive exploration.</p>
+      <h2>The "One True Self" Assumption in ABMs</h2>
+      <p>In purely mathematical models, researchers often duplicate nodes across different network layers to solve equations. However, because this is an <strong>Agent-Based Model (ABM)</strong>, we take a more grounded approach: there is only <strong>one true self</strong>.</p>
+      <p>A person does not physically duplicate when they travel from the office to their home. Their biological state (e.g., infected or susceptible) remains unified. Therefore, we transform the multilayer network into a flattened multiplex model by taking the <strong>union of all agents</strong>. There is a single set of core nodes.</p>
+      <p>To simulate environmental complexity, "layers" are treated strictly as <strong>distinct sets of edges</strong> connecting these core nodes. If an agent does not participate in a particular context (like a specific social media app), they simply have an edge degree of zero for that specific layer.</p>
     </div>
 
-    <div class="l--body">
-      <h2>Reading the Visualization</h2>
-      <p>Each <strong>circle</strong> represents an agent. Agents are colored by their state: gray (Susceptible), red (Infected), or green (Recovered).</p>
-      <p>Each <strong>layer</strong> of connections is drawn as a set of arcs. The first layer appears above the agents (orange), the second below (blue), and additional layers alternate position and color.</p>
-      <p><strong>Arc thickness</strong> represents connection weight — thicker arcs correspond to stronger interactions and higher transmission probability.</p>
-      <p>Hover over an agent to see which layer first infected it and how many agents it has infected per layer. Hover over an arc to see its weight.</p>
-
-      <h3>How We Build the Visualization</h3>
-      <p>Step through the animation below to see how separate layer networks are merged into a single arc diagram.</p>
-      <div id="viz-explainer">
+    <div id="viz-explainer">
         <div id="viz-explainer-controls">
           <button id="viz-prev" class="mdl-button mdl-js-button mdl-button--icon" title="Previous step" disabled>
             <i class="material-icons">chevron_left</i>
@@ -251,27 +235,30 @@
           </button>
         </div>
         <p id="viz-step-description" class="viz-desc"></p>
-        <svg id="viz-explainer-svg" width="550" height="260"></svg>
-      </div>
+        <svg id="viz-explainer-svg" height="260"></svg>
     </div>
 
     <div class="l--body">
+      <p>By transforming the network this way, each <strong>circle</strong> represents an agent's unified biological state globally. The distinct <strong>colored arcs</strong> represent the specific environmental contexts (layers) they participate in. If an agent isn't part of a layer, they simply have no arcs of that color.</p>
+    </div>
+    
+
+    <div class="l--body">
       <h2>Controls</h2>
-      <p><strong>Agents</strong>: number of agents in the simulation.</p>
-      <p><strong>Spread Rate</strong>: base probability that an infected agent transmits in one step (scaled by edge weight).</p>
-      <p><strong>Recovery Rate</strong>: probability an infected agent recovers per step.</p>
-      <p><strong>Connectivity</strong> (per layer): edge density — higher values mean more connections in that layer.</p>
-      <p><strong>Frequency</strong> (per layer): how often that layer activates (every N simulation steps). Not all interactions happen equally often — you likely see coworkers more frequently than extended family.</p>
+      <p><strong>Agents</strong>: sets how many individuals are included in the simulation.</p>
+      <p><strong>Spread Rate</strong>: the baseline chance that an infected agent transmits in a single step (scaled by edge weight).</p>
+      <p><strong>Recovery Rate</strong>: the chance that an infected agent recovers during each step.</p>
+      <p><strong>Connectivity</strong> (per layer): controls edge density. Higher values create more connections in that layer.</p>
+      <p><strong>Frequency</strong> (per layer): controls how often a layer becomes active (every N steps). Interactions are not equally frequent—for example, most people see coworkers more often than extended family.</p>
     </div>
 
     <div class="l--body">
       <h2>Repurpose This?</h2>
-      <p>This playground is open-source. It builds on the <a href="https://github.com/tensorflow/playground">TensorFlow Playground</a> (Apache 2.0) and demonstrates ideas from the <a href="https://github.com/Repast/repast4py">MultiRepast4py</a> multilayer simulation framework.</p>
+      <p>This playground is open-source. It builds on the <a href="https://github.com/tensorflow/playground">TensorFlow Playground</a> (Apache 2.0) and demonstrates flattened multilayer simulation strategies inspired by the <a href="https://github.com/Repast/repast4py">MultiRepast4py</a> framework.</p>
     </div>
 
   </article>
 
-  <!-- Footer -->
   <footer>
     <div class="l--body">
       <div class="links">
@@ -281,7 +268,6 @@
       </div>
     </div>
   </footer>
-
 
   <script src="bundle.js"></script>
   <script src="analytics.js"></script>

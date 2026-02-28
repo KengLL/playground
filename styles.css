@@ -331,7 +331,6 @@ header h1 .optional {
 }
 
 #top-controls .control .select::after {
-  class: "material-icons";
   content: "arrow_drop_down";
   color: #999;
   font-family: 'Material Icons';
@@ -699,6 +698,10 @@ g.column rect {
 }
 
 @-webkit-keyframes flowing {
+  from { stroke-dashoffset: 0; } to { stroke-dashoffset: -10; }
+}
+
+@keyframes flowing {
   from { stroke-dashoffset: 0; } to { stroke-dashoffset: -10; }
 }
 
@@ -1306,11 +1309,10 @@ g.agent.agent-selected circle.agent-circle {
 
 /* ---- Viz explainer animation ---- */
 #viz-explainer {
-  margin: 24px 0;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 16px 20px 20px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 24px auto;
+  padding: 12px 0 0;
 }
 
 #viz-explainer-controls {
